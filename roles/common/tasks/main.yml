@@ -1,0 +1,51 @@
+---
+# This role contains common plays that will run on all nodes.
+
+#- name: Create the local repository
+#  copy: src=etc/yum.repos.d/local.repo dest=/etc/yum.repos.d/local.repo
+
+- name: remove all the repo
+  shell: rm -rf /etc/yum.repos.d/*.repo
+
+- name: Create the cache repository
+  copy: src=etc/yum.repos.d/cache.repo dest=/etc/yum.repos.d/cache.repo
+
+- name: Install ntp 
+  yum: name=ntp state=present
+
+- name: Configure ntp file
+  template: src=etc/ntp.conf.j2 dest=/etc/ntp.conf
+  notify: restart ntp
+
+- name: Start the ntp service
+  service: name=ntpd state=started enabled=true
+
+- name: Disable SELinux by command
+  command: /usr/sbin/setenforce 0
+  ignore_errors: True
+
+- name: Disable SELinux in config
+  selinux: state=disabled
+
+- name: Build hosts file
+  lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ hostvars[item].ansible_default_ipv4.address }} {{item}} {{item}}" state=present
+  when: hostvars[item].ansible_default_ipv4.address is defined
+  with_items: groups['all']
+
+- name: Config hostname
+  hostname: name={{ inventory_hostname }}
+
+- name: Install some tools
+  yum: name={{ item }} state=present
+  with_items:
+    - vim
+    - htop
+    - psmisc
+    - MySQL-python
+    - ceph
+    - kexec-tools
+    - wget
+    - lrzsz
+
+- name: Configure Ceph admin key
+  copy: src=cephkey/ceph.client.admin.keyring dest=/etc/ceph/ceph.client.admin.keyring mode=0644

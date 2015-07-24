@@ -1,0 +1,64 @@
+---
+# This role is used to deploy and config nova service on compute node
+
+- name: Install nova-compute package
+  yum: name=openstack-nova-compute state=present
+
+- name: Configure nova config
+  template: src=etc/nova/nova.conf.compute.j2 dest=/etc/nova/nova.conf owner=nova group=nova mode=0640
+  notify: restart openstack-nova-compute
+
+- name: Configure libvirtd
+  copy: src=etc/libvirt/libvirtd.conf dest=/etc/libvirt/libvirtd.conf
+
+- name: Configure libvirtd sysconfig
+  copy: src=etc/sysconfig/libvirtd dest=/etc/sysconfig/libvirtd
+
+- name: Start libvirtd
+  service: name=libvirtd  state=started  enabled=yes
+
+- name: Configure Ceph vms secret.xml
+  copy: src=cephkey/secret.xml dest=/etc/ceph/secret.xml mode=0644
+  register: secretxml
+
+- name: Configure Ceph vms key
+  copy: src=cephkey/ceph.client.vms.keyring dest=/etc/ceph/ceph.client.vms.keyring mode=0644
+  register: cephkey
+
+- name: Configure Ceph vmkey
+  copy: src=cephkey/vmkey dest=/etc/ceph/vmkey mode=0644
+  register: vmkey
+
+- name: undefine libvirt secret
+  shell:  virsh secret-undefine 457eb676-33da-42ec-9a8c-9293d545c337
+  when: cephkey.changed or secretxml.changed or vmkey.changed
+  ignore_errors: True
+
+- name: Configure secret in libvirt
+  shell: virsh secret-define --file /etc/ceph/secret.xml
+  when: cephkey.changed or secretxml.changed or vmkey.changed
+
+- name: Configure secret in libvirt
+  shell: virsh secret-set-value --secret 457eb676-33da-42ec-9a8c-9293d545c337 --base64 $(cat /etc/ceph/vmkey)
+  when: cephkey.changed or secretxml.changed or vmkey.changed
+
+- name: Start messagebus
+  service: name=messagebus  state=started  enabled=yes
+
+- name: Start nova-compute
+  service: name=openstack-nova-compute  state=started  enabled=yes
+
+- name: configure nova bash
+  shell: usermod -s /bin/bash nova
+
+- name: configure nova .ssh
+  file: path=/var/lib/nova/.ssh state=directory mode=0700 owner=nova group=nova
+
+- name: configure nova ssh config
+  copy: src=var/lib/nova/ssh/config dest=/var/lib/nova/.ssh/config mode=0644 owner=nova group=nova
+
+- name: configure nova ssh id_rsa
+  copy: src=var/lib/nova/ssh/id_rsa dest=/var/lib/nova/.ssh/id_rsa mode=0600 owner=nova group=nova
+
+- name: configure nova ssh authorized_keys
+  copy: src=var/lib/nova/ssh/authorized_keys dest=/var/lib/nova/.ssh/authorized_keys mode=0600 owner=nova group=nova

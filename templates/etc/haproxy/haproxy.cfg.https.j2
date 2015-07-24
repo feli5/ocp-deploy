@@ -1,0 +1,212 @@
+#---------------------------------------------------------------------
+# Global settings
+#---------------------------------------------------------------------
+global
+    log         127.0.0.1 local2
+    chroot      /var/lib/haproxy
+    pidfile     /var/run/haproxy.pid
+    maxconn     4000
+    user        haproxy
+    group       haproxy
+    daemon
+
+    # turn on stats unix socket
+    stats socket /var/lib/haproxy/stats
+#---------------------------------------------------------------------
+# common defaults that all the 'listen' and 'backend' sections will
+# use if not designated in their block
+#---------------------------------------------------------------------
+defaults
+        log             global
+        mode            http
+        option          httplog
+        option          dontlognull
+        retries         3
+        option          redispatch
+        maxconn         20000
+        contimeout      5000
+        clitimeout      50000
+        srvtimeout      50000
+
+#Haproxy Web
+listen stats 0.0.0.0:9000       #Listen on all IP's on port 9000
+    mode http
+    balance
+    timeout client 5000
+    timeout connect 4000
+    timeout server 30000
+
+    #This is the virtual URL to access the stats page
+    stats uri /haproxy
+
+    #Authentication realm. This can be set to anything. Escape space characters with a backslash.
+    stats realm HAProxy\ Statistics
+
+    #The user/pass you want to use. Change this password!
+    stats auth admin:admin
+
+    #This allows you to take down and bring up back end servers.
+    #This will produce an error on older versions of HAProxy.
+    stats admin if TRUE
+
+
+# horizon
+frontend horizon_frontend
+	bind {{ horizon_vip }}:{{ horizon_vport }} ssl crt /etc/haproxy/haproxy.crt
+	mode http
+	option httpclose
+	option forwardfor
+	reqadd X-Forwarded-Protocol:\ https
+	default_backend horizon_server
+ 
+backend horizon_server
+	mode http
+	balance roundrobin
+	cookie SERVERID insert indirect nocache
+{% for host in groups['controller'] %}
+        server horizon{{ loop.index }} {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}:80 check cookie horizon{{ loop.index }}
+{% endfor %}
+
+# keystone api
+frontend keystone_frontend
+	bind {{ keystone_service_url_vip }}:{{ keystone_service_url_port }} ssl crt /etc/haproxy/haproxy.crt
+	mode http
+	option httpclose
+	option forwardfor
+	reqadd X-Forwarded-Protocol:\ https
+	default_backend keystone_server
+
+backend keystone_server
+	mode http
+	balance roundrobin
+	cookie SERVERID insert indirect nocache
+{% for host in groups['controller'] %}
+        server keystone{{ loop.index }} {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}:5000 check cookie keystone{{ loop.index }}
+{% endfor %}
+
+# keystone admin
+frontend keystone_admin_frontend
+	bind {{ keystone_admin_url_vip }}:{{ keystone_admin_url_port }} ssl crt /etc/haproxy/haproxy.crt
+	mode http
+	option httpclose
+	option forwardfor
+	reqadd X-Forwarded-Protocol:\ https
+	default_backend keystone_admin_server
+
+backend keystone_admin_server
+	mode http
+	balance roundrobin
+	cookie SERVERID insert indirect nocache
+{% for host in groups['controller'] %}
+        server keystoneadmin{{ loop.index }} {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}:35357 check cookie keystoneadmin{{ loop.index }}
+{% endfor %}
+
+# glance api
+frontend glanceapi_frontend
+	bind {{ glance_service_url_vip }}:{{ glance_service_url_port }} ssl crt /etc/haproxy/haproxy.crt
+	mode http
+	option httpclose
+	option forwardfor
+	reqadd X-Forwarded-Protocol:\ https
+	default_backend glanceapi_server
+
+backend glanceapi_server
+	mode http
+	balance roundrobin
+	cookie SERVERID insert indirect nocache
+{% for host in groups['controller'] %}
+        server glanceapi{{ loop.index }} {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}:9292 check cookie glanceapi{{ loop.index }}
+{% endfor %}
+
+# glance registry
+frontend glanceregistry_frontend
+	bind {{ glance_registry_url_vip }}:{{ glance_registry_url_port }} ssl crt /etc/haproxy/haproxy.crt
+	mode http
+	option httpclose
+	option forwardfor
+	reqadd X-Forwarded-Protocol:\ https
+	default_backend glanceregistry_server
+
+backend glanceregistry_server
+	mode http
+	balance roundrobin
+	cookie SERVERID insert indirect nocache
+{% for host in groups['controller'] %}
+        server glanceregistry{{ loop.index }} {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}:9191 check cookie glanceregistry{{ loop.index }}
+{% endfor %}
+
+# nova api
+frontend novaapi_frontend
+        bind {{ nova_service_url_vip }}:{{ nova_service_url_port }} ssl crt /etc/haproxy/haproxy.crt
+        mode http
+        option httpclose
+        option forwardfor
+        reqadd X-Forwarded-Protocol:\ https
+        default_backend novaapi_server
+
+backend novaapi_server
+        mode http
+        balance roundrobin
+        cookie SERVERID insert indirect nocache
+{% for host in groups['controller'] %}
+        server novapi{{ loop.index }} {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}:8774 check cookie novaapi{{ loop.index }}
+{% endfor %}
+
+# nova novnc
+frontend novanovnc_frontend
+        bind {{ nova_vnc_vip }}:{{ nova_vnc_port }} ssl crt /etc/haproxy/haproxy.crt
+        mode http
+        option httpclose
+        option forwardfor
+        reqadd X-Forwarded-Protocol:\ https
+        default_backend novanovnc_server
+
+backend novanovnc_server
+        mode http
+        balance roundrobin
+        cookie SERVERID insert indirect nocache
+{% for host in groups['controller'] %}
+        server novanovnc{{ loop.index }} {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}:6080 check cookie novanovnc{{ loop.index }}
+{% endfor %}
+
+# neutron
+frontend neutron_frontend
+        bind {{ neutron_service_url_vip }}:{{ neutron_service_url_port }} ssl crt /etc/haproxy/haproxy.crt
+        mode http
+        option httpclose
+        option forwardfor
+        reqadd X-Forwarded-Protocol:\ https
+        default_backend neutron_server
+
+backend neutron_server
+        mode http
+        balance roundrobin
+        cookie SERVERID insert indirect nocache
+{% for host in groups['controller'] %}
+        server neutron{{ loop.index }} {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}:9696 check cookie neutron{{ loop.index }}
+{% endfor %}
+
+# nova metadata
+listen  novametada {{ nova_metadata_ip }}:{{ nova_metadata_port }}
+        option forwardfor
+        cookie  SERVERID rewrite
+        balance roundrobin
+{% for host in groups['controller'] %}
+        server novametadata{{ loop.index }} {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}:8775 check cookie novametadata{{ loop.index }}
+{% endfor %}
+
+# swift api
+#frontend swift_frontend
+#	bind 10.224.159.114:443 ssl crt /home/matt/cert/webexcert/qa.crt
+#	mode http
+#	option httpclose
+#	option forwardfor
+#	reqadd X-Forwarded-Protocol:\ https
+#	default_backend swift_server
+
+#backend swift_server
+#	mode http
+#	balance roundrobin
+#	cookie SERVERID insert indirect nocache
+#	server swift1 10.224.159.83:8080 check cookie swift1
+#	server swift2 10.224.159.84:8080 check cookie swift2

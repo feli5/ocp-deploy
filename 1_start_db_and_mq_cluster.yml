@@ -1,0 +1,22 @@
+---
+- hosts: all
+  roles:
+  - common
+
+# Start All the Mysqld to sync data
+- hosts: controller
+  tasks:
+  - name: Start Mysql Service
+    service: name=mysqld state=started enabled=true
+
+- hosts: controller1
+  roles:
+  - rabbitmq
+
+- hosts: controller2
+  roles:
+  - rabbitmq
+
+- hosts: controller3
+  roles:
+  - rabbitmq

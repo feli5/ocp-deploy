@@ -1,0 +1,85 @@
+---
+# This playbook deploys the whole application stack in this site.  
+
+# Apply common configuration to all hosts
+- hosts: all
+  roles:
+  - common
+
+
+# Build LoadBalance for Openstack
+- hosts: haproxy
+  roles:
+  - haproxy
+
+
+# Build Mysql & Rabbitmq Cluster
+- hosts: controller1
+  roles:
+  - mysql
+  - mysqlcluster_init
+  - rabbitmq
+
+- hosts: controller2
+  roles:
+  - mysql
+  - mysqlcluster_join
+  - rabbitmq
+
+- hosts: controller3
+  roles:
+  - mysql
+  - mysqlcluster_join
+  - rabbitmq
+
+- hosts: controller1
+  roles:
+  - mysqlcluster_finish
+
+- hosts: controller2
+  roles:
+  - mysqlcluster_finish
+
+- hosts: controller3
+  roles:
+  - mysqlcluster_finish
+
+# Install Controller Nodes
+- hosts: controller1
+  roles:
+  - keystone
+  - keystone_db_init
+  - glance
+  - nova_controller
+  - neutron_controller
+  - horizon
+
+- hosts: controller2
+  roles:
+  - keystone
+  - glance
+  - nova_controller
+  - neutron_controller
+  - horizon
+
+- hosts: controller3
+  roles:
+  - keystone
+  - glance
+  - nova_controller
+  - neutron_controller
+  - horizon
+
+
+# Install Network Nodes
+- hosts: network
+  roles:
+  - neutron_network
+
+
+# Install Compute Nodes
+- hosts: compute
+  roles:
+  - nova_compute
+  - neutron_compute
+

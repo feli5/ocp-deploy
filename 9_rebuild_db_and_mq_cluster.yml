@@ -1,0 +1,47 @@
+---
+- hosts: all
+  roles:
+  - common
+
+# Start All the Mysqld to sync data
+- hosts: controller3
+  tasks:
+  - name: Stop Mysql Service
+    service: name=mysqld state=stopped enabled=true
+
+- hosts: controller2
+  tasks:
+  - name: Stop Mysql Service
+    service: name=mysqld state=stopped enabled=true
+
+- hosts: controller1
+  tasks:
+  - name: Stop Mysql Service
+    service: name=mysqld state=stopped enabled=true
+
+- hosts: controller1
+  roles:
+  - mysqlcluster_init
+  - rabbitmq
+
+- hosts: controller2
+  roles:
+  - mysqlcluster_join
+  - rabbitmq
+
+- hosts: controller3
+  roles:
+  - mysqlcluster_join
+  - rabbitmq
+
+- hosts: controller1
+  roles:
+  - mysqlcluster_finish
+
+- hosts: controller2
+  roles:
+  - mysqlcluster_finish
+
+- hosts: controller3
+  roles:
+  - mysqlcluster_finish
