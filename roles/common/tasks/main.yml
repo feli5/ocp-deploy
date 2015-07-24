@@ -1,15 +1,30 @@
 ---
+# TODO: This role can be done in cobbler!!
 # This role contains common plays that will run on all nodes.
 
-#- name: Create the local repository
-#  copy: src=etc/yum.repos.d/local.repo dest=/etc/yum.repos.d/local.repo
-
-- name: remove all the repo
+- name: Remove all the repo
   shell: rm -rf /etc/yum.repos.d/*.repo
 
-- name: Create the cache repository
-  copy: src=etc/yum.repos.d/cache.repo dest=/etc/yum.repos.d/cache.repo
+# TODO: use template to support different repo address
+- name: Create the ocp repository
+  copy: src=etc/yum.repos.d/ocp.repo dest=/etc/yum.repos.d/ocp.repo
 
+- name: Clean up repo cache
+  shell: yum clean all 
+
+# Disable Firewalld
+- name: Disable Firewalld
+  service: name=firewalld state=stopped enabled=false
+
+# Disable SELinux
+- name: Disable SELinux by command
+  shell: /usr/sbin/setenforce 0
+  ignore_errors: True
+
+- name: Disable SELinux in config
+  selinux: state=disabled
+
+# NTP
 - name: Install ntp 
   yum: name=ntp state=present
 
@@ -20,32 +35,29 @@
 - name: Start the ntp service
   service: name=ntpd state=started enabled=true
 
-- name: Disable SELinux by command
-  command: /usr/sbin/setenforce 0
-  ignore_errors: True
-
-- name: Disable SELinux in config
-  selinux: state=disabled
-
+# Hosts
 - name: Build hosts file
-  lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ hostvars[item].ansible_default_ipv4.address }} {{item}} {{item}}" state=present
+  lineinfile: dest=/etc/hosts regexp='.*{{ item }}$' line="{{ hostvars[item].ansible_default_ipv4.address }} {{ item }}.{{ domainname }} {{ item }}" state=present
   when: hostvars[item].ansible_default_ipv4.address is defined
   with_items: groups['all']
 
+# Hostname
 - name: Config hostname
-  hostname: name={{ inventory_hostname }}
+  hostname: name={{ inventory_hostname }}.{{ domainname }}
 
+# DNS
+- name: Confiture dns server
+  template: src=etc/resolv.conf.j2 dest=/etc/resolv.conf
+
+# Install common packages
 - name: Install some tools
   yum: name={{ item }} state=present
   with_items:
+    - net-tools
     - vim
     - htop
     - psmisc
     - MySQL-python
-    - ceph
     - kexec-tools
     - wget
     - lrzsz
-
-- name: Configure Ceph admin key
-  copy: src=cephkey/ceph.client.admin.keyring dest=/etc/ceph/ceph.client.admin.keyring mode=0644

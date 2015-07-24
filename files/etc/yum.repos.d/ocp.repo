@@ -1,0 +1,15 @@
+[juno-all]
+name=Org Local Cache for Juno
+baseurl=http://10.224.251.240/juno-all/
+enabled=1
+skip_if_unavailable=0
+gpgcheck=0
+priority=1
+
+[patch]
+name=Local Cache for patch
+baseurl=http://10.224.251.240/patch/
+enabled=1
+skip_if_unavailable=0
+gpgcheck=0
+priority=1
