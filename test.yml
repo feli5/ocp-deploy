@@ -3,17 +3,22 @@
 
 - hosts: controller
   roles:
+  - common
   - mysql
 
+- hosts: controller
+  tasks:
+  - name: Stop rabbitmq-server Service
+    service: name=rabbitmq-server state=stopped enabled=true
 
 - hosts: controller1
   roles:
-  - rabbitmq
+  - rabbitmqcluster
 
 - hosts: controller2
   roles:
-  - rabbitmq
+  - rabbitmqcluster
 
 - hosts: controller3
   roles:
-  - rabbitmq
+  - rabbitmqcluster

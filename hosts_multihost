@@ -23,7 +23,7 @@ dnsname1 = 10.224.30.4
 dnsname2 = 8.8.8.8
 
 # NTP
-ntp_server = uk.pool.ntp.org
+ntp_server = 10.224.251.1
 
 
 ####################

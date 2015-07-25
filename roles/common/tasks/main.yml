@@ -32,6 +32,12 @@
   template: src=etc/ntp.conf.j2 dest=/etc/ntp.conf
   notify: restart ntp
 
+- name: Stop the ntp service
+  service: name=ntpd state=stopped enabled=true
+
+- name: Sync time
+  shell: ntpdate {{ ntp_server }}
+
 - name: Start the ntp service
   service: name=ntpd state=started enabled=true
 
