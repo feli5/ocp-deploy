@@ -4,16 +4,16 @@
 - name: Install Mysql package
   yum: name={{ item }} state=present
   with_items:
-    - mysql
-    - mysql-server
+    - mariadb
+    - mariadb-galera-server
     - MySQL-python
 
 - name: Create Mysql configuration file
   copy: src=etc/my.cnf dest=/etc/my.cnf
-  notify: restart mysqld
+  notify: restart mariadb
 
 - name: Start Mysql Service
-  service: name=mysqld state=started enabled=true
+  service: name=mariadb state=started enabled=true
 
 - name: Config Mysql Root User
   mysql_user: name=root password={{ db_root_password }} host={{ item }} priv=*.*:ALL,GRANT state=present
@@ -25,7 +25,7 @@
 
 - name: Copy .my.cnf file with root password credentials
   template: src=templates/root/my.cnf  dest=/root/.my.cnf  owner=root  group=root  mode=0640
-  notify: restart mysqld
+  notify: restart mariadb
 
 - name: Ensure anonymous users are not in the database
   mysql_user: name=''  host=$item  state=absent

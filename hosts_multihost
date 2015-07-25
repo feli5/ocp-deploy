@@ -1,5 +1,6 @@
 # Hosts
-#haproxy          ansible_ssh_host=10.224.147.250  ansible_connection=ssh  ansible_ssh_user=root
+# ip is from 10.224.251.240 - 10.224.251.251
+# 10.224.251.251 is mysql vip
 controller1      ansible_ssh_host=10.224.251.241  ansible_connection=ssh  ansible_ssh_user=root
 controller2      ansible_ssh_host=10.224.251.242  ansible_connection=ssh  ansible_ssh_user=root
 controller3      ansible_ssh_host=10.224.251.243  ansible_connection=ssh  ansible_ssh_user=root
@@ -12,7 +13,7 @@ swift3           ansible_ssh_host=10.224.251.248  ansible_connection=ssh  ansibl
 [all:vars]
 ####################
 # Common
-# ##################
+####################
 
 # Domain Name
 domainname = qa.webex.com
@@ -21,15 +22,17 @@ domainname = qa.webex.com
 dnsname1 = 10.224.30.4 
 dnsname2 = 8.8.8.8
 
-
 # NTP
 ntp_server = uk.pool.ntp.org
 
+
+####################
 # MySQL
+####################
 db_root_password        = 123work
-mysql_vip               = 10.224.147.250
+mysql_vip               = 10.224.251.251
 mysql_vip_port          = 3306
-management_network      = 10.224.147.%
+management_network      = 10.224.251.%
 
 ############
 # RabbitMQ #
