@@ -11,3 +11,33 @@
   roles:
   - haproxy
 
+# Install Controller Nodes
+- hosts: controller1
+  roles:
+  - keystone
+  - keystone_db_init
+  - glance
+  - nova_controller
+  - neutron_controller
+  - horizon
+
+- hosts: controller2
+  roles:
+  - keystone
+  - glance
+  - nova_controller
+  - neutron_controller
+  - horizon
+
+- hosts: controller3
+  roles:
+  - keystone
+  - glance
+  - nova_controller
+  - neutron_controller
+  - horizon
+
+# Install Network Nodes
+- hosts: network
+  roles:
+  - neutron_network

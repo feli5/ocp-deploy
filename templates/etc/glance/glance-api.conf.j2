@@ -10,7 +10,7 @@
 # by the known_stores option below.
 # Default: 'file'
 #default_store=file
-default_store=rbd
+default_store=file
 
 # Maximum image size (in bytes) that may be uploaded through the
 # Glance API server. Defaults to 1 TB.
@@ -72,7 +72,6 @@ default_store=rbd
 # be returned to the user in the 'direct_url' meta-data field.
 # The default value is false.
 #show_image_direct_url=False
-show_image_direct_url=True
 
 # Send headers containing user and tenant information when making requests to
 # the v1 glance registry. This allows the registry to function as if a user is
@@ -449,11 +448,10 @@ flavor=keystone
 #      glance.store.cinder.Store,
 #      glance.store.gridfs.Store,
 #      glance.store.vmware_datastore.Store,
-#stores=glance.store.filesystem.Store,
-#         glance.store.http.Store
 stores=glance.store.filesystem.Store,
-       glance.store.http.Store,
-       glance.store.rbd.Store
+       glance.store.rbd.Store,
+       glance.store.swift.Store,
+       glance.store.http.Store
 
 
 # ============ Filesystem Store Options ========================
@@ -628,17 +626,14 @@ stores=glance.store.filesystem.Store,
 # include a reference to the right keyring
 # in a client.<USER> section
 #rbd_store_ceph_conf=/etc/ceph/ceph.conf
-rbd_store_ceph_conf=/etc/ceph/ceph.conf
 
 # RADOS user to authenticate as (only applicable if using cephx)
 # If <None>, a default will be chosen based on the client. section
 # in rbd_store_ceph_conf
 #rbd_store_user=<None>
-rbd_store_user=images
 
 # RADOS pool in which images are stored
 #rbd_store_pool=images
-rbd_store_pool=images
 
 # RADOS images will be chunked into objects of this size (in megabytes).
 # For best performance, this should be a power of two

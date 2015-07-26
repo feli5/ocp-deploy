@@ -23,4 +23,4 @@
 
 - name: restart metadata agent
   service: name=neutron-metadata-agent  state=restarted
-  notify: restart-l3-agent
+  notify: restart neutron-l3-agent

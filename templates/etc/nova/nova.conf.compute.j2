@@ -2905,7 +2905,6 @@ cpu_mode=none
 # /usr/share/libvirt/cpu_map.xml). Only has effect if
 # cpu_mode="custom" and virt_type="kvm|qemu" (string value)
 #cpu_model=<None>
-cpu_model=None
 
 # Location where libvirt driver will store snapshots before
 # uploading them to image service (string value)
@@ -2959,7 +2958,6 @@ cpu_model=None
 # rbd, default. If default is specified, then use_cow_images
 # flag is used instead of this one. (string value)
 #images_type=default
-images_type=rbd
 
 # LVM Volume Group that is used for VM images, when you
 # specify images_type=lvm. (string value)
@@ -2980,11 +2978,9 @@ images_type=rbd
 # The RADOS pool in which rbd volumes are stored (string
 # value)
 #images_rbd_pool=rbd
-images_rbd_pool=vms
 
 # Path to the ceph configuration file to use (string value)
 #images_rbd_ceph_conf=
-images_rbd_ceph_conf=/etc/ceph/ceph.conf
 
 # Discard option for nova managed disks (valid options are:
 # ignore, unmap). Need Libvirt(1.0.6) Qemu1.5 (raw format)
@@ -3050,12 +3046,10 @@ images_rbd_ceph_conf=/etc/ceph/ceph.conf
 # The RADOS client name for accessing rbd volumes (string
 # value)
 #rbd_user=<None>
-rbd_user=vms
 
 # The libvirt UUID of the secret for the rbd_uservolumes
 # (string value)
 #rbd_secret_uuid=<None>
-rbd_secret_uuid=457eb676-33da-42ec-9a8c-9293d545c337
 
 # Directory where the NFS volume is mounted on the compute
 # node (string value)

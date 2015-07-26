@@ -30,9 +30,6 @@
    - restart openstack-glance-api
    - restart openstack-glance-registry
 
-- name: Configure Ceph image key
-  copy: src=cephkey/ceph.client.images.keyring dest=/etc/ceph/ceph.client.images.keyring mode=0644
-
 - name: Glance DB sync
   command: /usr/bin/glance-manage db_sync
 
