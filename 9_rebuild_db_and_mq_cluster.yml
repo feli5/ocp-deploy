@@ -7,17 +7,17 @@
 - hosts: controller3
   tasks:
   - name: Stop Mysql Service
-    service: name=mysqld state=stopped enabled=true
+    service: name=mariadb state=stopped enabled=true
 
 - hosts: controller2
   tasks:
   - name: Stop Mysql Service
-    service: name=mysqld state=stopped enabled=true
+    service: name=mariadb state=stopped enabled=true
 
 - hosts: controller1
   tasks:
   - name: Stop Mysql Service
-    service: name=mysqld state=stopped enabled=true
+    service: name=mariadb state=stopped enabled=true
 
 - hosts: controller1
   roles:

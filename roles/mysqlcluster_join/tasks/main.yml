@@ -1,12 +1,14 @@
 ---
 # This role will join MySQL galera cluster
 - name: Stop Mysql Service
-  service: name=mysqld state=stopped enabled=true
+  service: name=mariadb state=stopped enabled=true
+
+- pause: seconds=5
 
 - name: Create Mysql galera configuration file
   template: src=etc/my.cnf.d/galera.cnf.join.j2 dest=/etc/my.cnf.d/galera.cnf
-  notify: restart mysqld
+  notify: restart mariadb
 
 - name: Start Mysql Service
-  service: name=mysqld state=started enabled=true
+  service: name=mariadb state=started enabled=true
 

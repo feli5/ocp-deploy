@@ -67,3 +67,4 @@
     - kexec-tools
     - wget
     - lrzsz
+    - rsync
