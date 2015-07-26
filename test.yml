@@ -1,24 +1,13 @@
 ---
 # This playbook deploys the whole application stack in this site.  
 
-- hosts: controller
+# Apply common configuration to all hosts
+- hosts: all
   roles:
   - common
-  - mysql
 
-- hosts: controller
-  tasks:
-  - name: Stop rabbitmq-server Service
-    service: name=rabbitmq-server state=stopped enabled=true
-
-- hosts: controller1
+# Build LoadBalance for Openstack
+- hosts: haproxy
   roles:
-  - rabbitmqcluster
+  - haproxy
 
-- hosts: controller2
-  roles:
-  - rabbitmqcluster
-
-- hosts: controller3
-  roles:
-  - rabbitmqcluster

@@ -6,9 +6,11 @@ controller2      ansible_ssh_host=10.224.251.242  ansible_connection=ssh  ansibl
 controller3      ansible_ssh_host=10.224.251.243  ansible_connection=ssh  ansible_ssh_user=root
 compute1         ansible_ssh_host=10.224.251.244  ansible_connection=ssh  ansible_ssh_user=root
 compute2         ansible_ssh_host=10.224.251.245  ansible_connection=ssh  ansible_ssh_user=root
-swift1           ansible_ssh_host=10.224.251.246  ansible_connection=ssh  ansible_ssh_user=root
-swift2           ansible_ssh_host=10.224.251.247  ansible_connection=ssh  ansible_ssh_user=root
-swift3           ansible_ssh_host=10.224.251.248  ansible_connection=ssh  ansible_ssh_user=root
+compute3         ansible_ssh_host=10.224.251.246  ansible_connection=ssh  ansible_ssh_user=root
+swift1           ansible_ssh_host=10.224.251.247  ansible_connection=ssh  ansible_ssh_user=root
+swift2           ansible_ssh_host=10.224.251.248  ansible_connection=ssh  ansible_ssh_user=root
+swift3           ansible_ssh_host=10.224.251.249  ansible_connection=ssh  ansible_ssh_user=root
+haproxy          ansible_ssh_host=10.224.251.250  ansible_connection=ssh  ansible_ssh_user=root
 
 [all:vars]
 ####################
@@ -30,14 +32,14 @@ ntp_server = 10.224.251.1
 # MySQL
 ####################
 db_root_password        = 123work
-mysql_vip               = 10.224.251.251
+mysql_vip               = 10.224.251.250
 mysql_vip_port          = 3306
 management_network      = 10.224.251.%
 
 ############
 # RabbitMQ #
 ############
-rabbitmq_vip                   = 10.224.147.250
+rabbitmq_vip                   = 10.224.251.250
 rabbitmq_vip_port              = 5672
 rabbit_ha_queues               = True
 rabbitmq_user                  = rabbituser
@@ -50,10 +52,10 @@ keystone_mysql_password        = keystonepassword
 keystone_admin_token           = admin_token
 keystone_admin_password        = admin
 keystone_admin_email           = limao@cisco.com
-keystone_admin_url_vip         = 10.224.147.250
+keystone_admin_url_vip         = 10.224.251.250
 keystone_admin_url_port        = 35357
 keystone_admin_url_protocol    = http
-keystone_service_url_vip       = 10.224.147.250
+keystone_service_url_vip       = 10.224.251.250
 keystone_service_url_port      = 5000
 keystone_service_url_protocol  = http
 
@@ -63,10 +65,10 @@ keystone_service_url_protocol  = http
 glance_mysql_password          = glancepassword
 glance_admin_password          = glance_service_password
 glance_admin_email             = limao@cisco.com
-glance_service_url_vip         = 10.224.147.250
+glance_service_url_vip         = 10.224.251.250
 glance_service_url_port        = 9292
 glance_service_url_protocol    = http
-glance_registry_url_vip        = 10.224.147.250
+glance_registry_url_vip        = 10.224.251.250
 glance_registry_url_port       = 9191
 glance_registry_url_protocol   = http
 
@@ -76,13 +78,13 @@ glance_registry_url_protocol   = http
 nova_mysql_password            = novapassword
 nova_admin_password            = nova_service_password
 nova_admin_email               = limao@cisco.com
-nova_service_url_vip           = 10.224.147.250
+nova_service_url_vip           = 10.224.251.250
 nova_service_url_port          = 8774
 nova_service_url_protocol      = http
-nova_vnc_vip                   = 10.224.147.250
+nova_vnc_vip                   = 10.224.251.250
 nova_vnc_port                  = 6080
 nova_vnc_protocol              = http
-nova_metadata_ip               = 10.224.147.250
+nova_metadata_ip               = 10.224.251.250
 nova_metadata_port             = 8775
 # Modify this to kvm in phy
 virt_type                      = qemu 
@@ -93,7 +95,7 @@ virt_type                      = qemu
 neutron_mysql_password          = neutronpassword
 neutron_admin_password          = neutron_service_password
 neutron_admin_email             = limao@cisco.com
-neutron_service_url_vip         = 10.224.147.250
+neutron_service_url_vip         = 10.224.251.250
 neutron_service_url_port        = 9696
 neutron_service_url_protocol    = http
 type_drivers                    = gre
@@ -112,10 +114,9 @@ metadata_proxy_shared_secret    = sharedkey
 ############
 #  Horizon #
 ############
-#memcached_servers               = 10.224.147.231:11211,10.224.147.232:11211
-horizon_vip                     = 10.224.147.250
+horizon_vip                     = 10.224.251.250
 horizon_vport                   = 80
-ALLOWED_HOSTS                   = ['10.224.147.250']
+ALLOWED_HOSTS                   = ['10.224.251.250']
 
 [controller]
 controller1
@@ -131,6 +132,7 @@ controller3
 [compute]
 compute1
 compute2
+compute3
 
 [swift]
 swift1
