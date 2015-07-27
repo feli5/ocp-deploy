@@ -1900,7 +1900,7 @@ memcached_servers={% for node in groups['controller'] %}{{ node }}:11211{% if no
 # vif_plugging_is_fatal is False, events should not be
 # expected to arrive at all. (integer value)
 #vif_plugging_timeout=300
-vif_plugging_timeout=30
+vif_plugging_timeout=120
 
 
 #
