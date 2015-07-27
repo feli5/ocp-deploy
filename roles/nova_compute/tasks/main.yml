@@ -17,31 +17,6 @@
 - name: Start libvirtd
   service: name=libvirtd  state=started  enabled=yes
 
-- name: Configure Ceph vms secret.xml
-  copy: src=cephkey/secret.xml dest=/etc/ceph/secret.xml mode=0644
-  register: secretxml
-
-- name: Configure Ceph vms key
-  copy: src=cephkey/ceph.client.vms.keyring dest=/etc/ceph/ceph.client.vms.keyring mode=0644
-  register: cephkey
-
-- name: Configure Ceph vmkey
-  copy: src=cephkey/vmkey dest=/etc/ceph/vmkey mode=0644
-  register: vmkey
-
-- name: undefine libvirt secret
-  shell:  virsh secret-undefine 457eb676-33da-42ec-9a8c-9293d545c337
-  when: cephkey.changed or secretxml.changed or vmkey.changed
-  ignore_errors: True
-
-- name: Configure secret in libvirt
-  shell: virsh secret-define --file /etc/ceph/secret.xml
-  when: cephkey.changed or secretxml.changed or vmkey.changed
-
-- name: Configure secret in libvirt
-  shell: virsh secret-set-value --secret 457eb676-33da-42ec-9a8c-9293d545c337 --base64 $(cat /etc/ceph/vmkey)
-  when: cephkey.changed or secretxml.changed or vmkey.changed
-
 - name: Start messagebus
   service: name=messagebus  state=started  enabled=yes
 
