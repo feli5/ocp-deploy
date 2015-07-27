@@ -64,6 +64,13 @@
 - name: Create br-int
   openvswitch_bridge: bridge=br-int state=present
 
+# TODO: Hard-Code br-eth1 here
+- name: Create br-eth1
+  openvswitch_bridge: bridge=br-eth1 state=present
+
+- name: Add eth1 into br-eth1
+  openvswitch_port: bridge=br-eth1 port=eth1 state=present
+
 - name: Create br-ex
   openvswitch_bridge: bridge=br-ex state=present
 

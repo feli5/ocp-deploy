@@ -3,8 +3,6 @@
 - name: Stop Mysql Service
   service: name=mariadb state=stopped enabled=true
 
-- pause: seconds=5
-
 - name: Create Mysql galera configuration file
   template: src=etc/my.cnf.d/galera.cnf.join.j2 dest=/etc/my.cnf.d/galera.cnf
   notify: restart mariadb
