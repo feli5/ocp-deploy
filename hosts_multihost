@@ -7,9 +7,9 @@ controller3      ansible_ssh_host=10.224.251.243  ansible_connection=ssh  ansibl
 compute1         ansible_ssh_host=10.224.251.244  ansible_connection=ssh  ansible_ssh_user=root
 compute2         ansible_ssh_host=10.224.251.245  ansible_connection=ssh  ansible_ssh_user=root
 compute3         ansible_ssh_host=10.224.251.246  ansible_connection=ssh  ansible_ssh_user=root
-swift1           ansible_ssh_host=10.224.251.247  ansible_connection=ssh  ansible_ssh_user=root
-swift2           ansible_ssh_host=10.224.251.248  ansible_connection=ssh  ansible_ssh_user=root
-swift3           ansible_ssh_host=10.224.251.249  ansible_connection=ssh  ansible_ssh_user=root
+#swift1           ansible_ssh_host=10.224.251.247  ansible_connection=ssh  ansible_ssh_user=root
+#swift2           ansible_ssh_host=10.224.251.248  ansible_connection=ssh  ansible_ssh_user=root
+#swift3           ansible_ssh_host=10.224.251.249  ansible_connection=ssh  ansible_ssh_user=root
 haproxy          ansible_ssh_host=10.224.251.250  ansible_connection=ssh  ansible_ssh_user=root
 
 [all:vars]
@@ -100,7 +100,7 @@ neutron_service_url_port        = 9696
 neutron_service_url_protocol    = http
 type_drivers                    = vlan
 tenant_network_types            = vlan
-network_vlan_ranges             = physnet1:800:810
+network_vlan_ranges             = physnet1:237:247
 mechanism_drivers               = openvswitch
 enable_security_group           = True
 firewall_driver                 = neutron.agent.linux.iptables_firewall.OVSHybridIptablesFirewallDriver
@@ -128,12 +128,7 @@ controller2
 controller3
 
 
-[compute_az1]
+[compute]
 compute1
 compute2
 compute3
-
-[compute_az2]
-compute4
-compute5
-compute6

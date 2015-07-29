@@ -2,6 +2,7 @@
 # This role contains common plays that will run on all nodes.
 - name: upgrade all packages
   yum: name=* state=latest
+  register: upgrade
 
 # Centos 7 will shutdown stop system, to protect this, we need 1 min delay
 - name: restart machine
@@ -9,6 +10,9 @@
   async: 0
   poll: 0
   ignore_errors: true
+  register: restart
+  when: upgrade.changed
 
 - name: waiting for server to come back
   local_action: wait_for host={{ ansible_default_ipv4.address }} port=22 timeout=300 delay=90 state=started
+  when: restart.changed
