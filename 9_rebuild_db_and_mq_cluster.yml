@@ -22,17 +22,17 @@
 - hosts: controller1
   roles:
   - mysqlcluster_init
-  - rabbitmq
+  - rabbitmqcluster
 
 - hosts: controller2
   roles:
   - mysqlcluster_join
-  - rabbitmq
+  - rabbitmqcluster
 
 - hosts: controller3
   roles:
   - mysqlcluster_join
-  - rabbitmq
+  - rabbitmqcluster
 
 - hosts: controller1
   roles:
